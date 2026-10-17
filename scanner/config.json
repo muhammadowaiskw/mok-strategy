@@ -1,10 +1,10 @@
 {
   "market": "fut",
-  "fallbackToSpot": false,
-  "prim": "15m",
+  "fallbackToSpot": true,
+  "prim": "5m",
   "topN": 200,
   "minVolM": 0,
-  "freshBars": 2,
+  "freshBars": 4,
   "requireQualified": true,
   "directions": "all",
   "params": {},
