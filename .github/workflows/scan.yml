@@ -1,0 +1,46 @@
+name: CAB Scanner
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+    inputs:
+      test:
+        description: 'Send a test notification'
+        type: boolean
+        default: false
+
+concurrency:
+  group: cab-scan
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-save web-push@3.6.7
+      - run: mkdir -p .state
+      - uses: actions/cache/restore@v4
+        with:
+          path: .state
+          key: cab-state-${{ github.run_id }}
+          restore-keys: cab-state-
+      - run: node scanner/scan.mjs
+        env:
+          PUSH_SUB: ${{ secrets.PUSH_SUB }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          TEST: ${{ inputs.test }}
+      - uses: actions/cache/save@v4
+        if: success()
+        with:
+          path: .state
+          key: cab-state-${{ github.run_id }}
