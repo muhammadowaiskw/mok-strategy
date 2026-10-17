@@ -1,0 +1,12 @@
+{
+  "market": "fut",
+  "fallbackToSpot": true,
+  "prim": "5m",
+  "topN": 200,
+  "minVolM": 0,
+  "freshBars": 4,
+  "requireQualified": true,
+  "directions": "all",
+  "params": {},
+  "vapidPublic": "BG_Od3CoOVmEviensjEJeJGHzYoB7FfNpcLYOaZmBsb83HP-MWxqnZsrj-rDVYju_AIqSVzML50WOF5mETLkS-g"
+}

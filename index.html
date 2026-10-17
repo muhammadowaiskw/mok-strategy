@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mok Strategy – Live Dashboard</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0707;--tx:#f2f2f2;--mut:#8b8b8b;--up:#22e58a;--dn:#ff4d5e;--line:#ffffff14;--amb:#e0a43a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(1200px 500px at 20% 0,#2a0d0d33,transparent),var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.logo{width:40px;height:40px;border-radius:10px;background:#fff;color:#0a8f6a;font-weight:900;display:grid;place-items:center;font-size:15px}
+.brand{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--mut);line-height:1.3}
+nav{margin-left:auto;display:flex;gap:16px;font-size:13px;font-weight:700}
+nav span{color:var(--mut)}nav .on{color:#fff;border-bottom:2px solid var(--amb);padding-bottom:4px}
+main{padding:16px;max-width:1500px;margin:auto}
+.eyebrow{font-size:10px;letter-spacing:.12em;font-weight:800;color:var(--mut)}
+h1{font-size:clamp(30px,6vw,44px);margin:6px 0 2px;letter-spacing:-.03em}h1 i{color:var(--amb);font-style:normal}
+.sub{font-size:12px;color:var(--mut)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--mut);margin:14px 0 8px}
+.legend b{display:inline-block;width:14px;height:8px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.bar{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--mut);margin-bottom:14px}
+.bar .pb{width:140px;height:3px;background:#ffffff22;border-radius:2px;overflow:hidden}.bar .pb i{display:block;height:100%;width:100%;background:#cfcfcf}
+.bar .cnt{margin-left:auto;font-weight:700;color:#ddd}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{border-radius:18px;padding:14px;border:1px solid var(--line);position:relative;transition:.3s}
+.card.up{background:linear-gradient(160deg,#0f4a2c,#0a2418 70%);border-color:#22e58a44}
+.card.dn{background:linear-gradient(160deg,#4a1414,#240b0b 70%);border-color:#ff4d5e33}
+.top{display:flex;justify-content:space-between;font-size:10px;color:var(--mut)}
+.chip{border:1px solid var(--line);border-radius:6px;padding:2px 7px;font-size:9px;letter-spacing:.04em;background:#00000040}
+.chip b{color:#fff}
+.name{font-size:20px;font-weight:800;margin-top:18px}.full{font-size:11px;color:var(--mut)}
+.price{font-size:22px;font-weight:700;margin:10px 0 8px}.price small{font-size:10px;color:var(--mut);margin-left:4px}
+.row{display:flex;justify-content:space-between;font-size:11px;font-weight:800;letter-spacing:.03em}
+.u{color:var(--up)}.d{color:var(--dn)}.m{color:var(--mut);font-weight:500}
+.meta{font-size:10px;color:var(--mut);margin:12px 0;padding-top:10px;border-top:1px solid var(--line)}.meta b{color:#ddd;margin-right:10px}
+.tf{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.t{border:1px solid var(--line);background:#00000045;border-radius:10px;padding:7px 9px;font-size:11px;min-height:48px;display:flex;flex-direction:column;justify-content:space-between}
+.t.p{border-color:var(--amb);box-shadow:inset 0 0 0 1px #e0a43a55}
+.t .h{display:flex;justify-content:space-between;font-weight:800}
+.t .s{display:flex;justify-content:space-between;font-size:9px;color:var(--mut)}
+.w{color:#9aa}
+footer{text-align:center;color:var(--mut);font-size:11px;padding:18px}
+.pn{border:1px solid var(--line);background:#ffffff08;border-radius:16px;padding:14px;margin-bottom:16px}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:12px}
+.st div{background:#00000040;border-radius:10px;padding:8px 10px;font-size:10px;color:var(--mut)}.st b{display:block;font-size:17px;color:#fff;margin-top:3px}
+.ct{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:12px;margin-bottom:12px}
+.ct input[type=number]{width:80px;background:#000;border:1px solid var(--line);color:#fff;border-radius:6px;padding:4px 6px}
+.ct button,.pos button{background:#1a2a22;color:#fff;border:1px solid #22e58a55;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer}
+.ct button.r{border-color:#ff4d5e66;background:#2a1418}
+.pw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--mut);font-weight:600}
+.lg{font-size:10px;color:var(--mut);margin-top:8px;line-height:1.6}
+.sl{max-height:220px;overflow:auto;font-size:12px}.sr{padding:6px 8px;border-bottom:1px solid var(--line)}.sr.u b{color:var(--up)}.sr.d b{color:var(--dn)}.sr.nw{background:#e0a43a22;animation:fl 1s 6 alternate}@keyframes fl{to{background:#e0a43a66}}
+.fr{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.fc{border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700}.fc.u{color:var(--up)}.fc.d{color:var(--dn)}
+.sets{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:12px 0}.sets label{font-size:10px;color:var(--mut);display:flex;flex-direction:column;gap:4px}
+.sets input,.sets select,#q{background:#000;color:#fff;border:1px solid var(--line);border-radius:6px;padding:6px;font-size:12px}.sets input[type=checkbox]{width:18px;height:18px}
+.tick{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:8px 16px;font-size:10px;border-bottom:1px solid var(--line);color:#e0a43a}.dot{width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 8px var(--up);animation:pl 1.5s infinite}@keyframes pl{50%{opacity:.3}}.tick .tr{margin-left:auto;color:var(--up)}
+.am{color:#e0a43a}.h2{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:6px 0 12px}.h2 i{color:var(--amb);font-style:normal}
+.hero{position:relative;overflow:hidden;border-radius:24px;border:1px solid var(--line);background:radial-gradient(900px 400px at 80% 20%,#e0a43a22,transparent),linear-gradient(160deg,#0d0a08,#140909);padding:clamp(20px,4vw,48px);margin-bottom:16px;min-height:320px}
+.hc{position:relative;z-index:2;max-width:640px}.hh{font-size:clamp(46px,11vw,96px);line-height:.95;margin:10px 0 14px;font-weight:900;letter-spacing:-.04em;color:#fff}.hh span{background:linear-gradient(90deg,#f7b733,#e0762a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hp{color:#bdbdbd;font-size:14px;line-height:1.6;max-width:520px}.tg{margin-top:16px;font-size:10px;letter-spacing:.15em;font-weight:800;color:#ddd}
+.hs{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:26px;border:1px solid var(--line);border-radius:16px;background:#fff2;max-width:720px;overflow:hidden}.hs div{padding:14px;background:#0b0707dd}.hs small{font-size:9px;letter-spacing:.1em;color:var(--mut);font-weight:800}.hs b{display:block;font-size:34px;margin:4px 0}.hs span{font-size:9px;color:var(--mut)}
+@media(max-width:560px){.hs{grid-template-columns:repeat(2,1fr)}}
+.mtn{position:absolute;right:0;bottom:0;width:70%;height:75%;opacity:.8}
+.bks i{position:absolute;width:64px;border-radius:9px;animation:fy 5s ease-in-out infinite alternate;opacity:.85}.bks .g{background:linear-gradient(135deg,#34f0a0aa,#0b5a3a88);box-shadow:inset 0 0 18px #fff4,0 12px 40px #22e58a44}.bks .r{background:linear-gradient(135deg,#ff6b7aaa,#6a1420aa);box-shadow:inset 0 0 18px #fff4,0 12px 40px #ff4d5e44}@keyframes fy{to{transform:translateY(-22px) rotate(3deg)}}
+.fb{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;border:1px solid var(--line);background:#ffffff08;border-radius:16px;padding:14px;margin-bottom:14px}.fb label{font-size:9px;letter-spacing:.1em;color:var(--mut);font-weight:800;display:flex;flex-direction:column;gap:5px;flex:1 1 140px}.fb .fq{flex:3 1 200px}
+.fb select,.fb input{background:#0007;color:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:13px;width:100%}.gb{background:linear-gradient(135deg,#22e58a,#10b981);color:#04130c;border:0;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}.ct2{border:1px solid var(--line);background:#00000040;border-radius:12px;padding:12px}.ct2 small{display:block;font-size:9px;letter-spacing:.1em;color:var(--mut);font-weight:800}.ct2 b{display:block;font-size:24px;margin:6px 0 2px}.ct2 span{font-size:9px;color:var(--mut)}.sw{display:inline-block;width:34px;height:20px;border-radius:5px;margin-right:6px}
+.card.fl{filter:saturate(.4);border-color:#4a63b055}.card.up.fsh{box-shadow:0 0 26px #22e58a55;border-color:#22e58a}.card.dn.fsh{box-shadow:0 0 26px #ff4d5e55;border-color:#ff4d5e}
+.fx{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer;font-size:12px}.fx .bd{padding:3px 9px;border-radius:6px;font-size:11px;font-weight:800}.fx.u .bd{background:#22e58a;color:#04130c}.fx.d .bd{background:#ff4d5e;color:#1a0306}.fx .fs{font-weight:800;font-size:15px}
+#md{display:none;position:fixed;inset:0;background:#000b;z-index:50;overflow:auto;padding:16px}.mdb{max-width:560px;margin:6vh auto;background:#120c0c;border:1px solid var(--line);border-radius:18px;padding:18px}.md{font-size:12px;line-height:1.8;color:#ddd}.card{cursor:pointer}.t .s{gap:8px}
+
+:root{--bg:#06080c;--tx:#eef2f6;--mut:#8793a6;--up:#19d98b;--dn:#ff5c6c;--line:#ffffff17;--amb:#f0b34a;--pn:#0d1117;--pn2:#121923}
+html[data-theme=carbon]{--bg:#0a0a0b;--pn:#121213;--pn2:#19191b;--amb:#e8a23a;--line:#ffffff1c}
+html[data-theme=aurora]{--bg:#031110;--pn:#0a1816;--pn2:#0f2321;--amb:#4fe3c1;--up:#2cf0a0;--line:#4fe3c128}
+body{font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;font-variant-numeric:tabular-nums;background:radial-gradient(900px 480px at 12% -8%,color-mix(in srgb,var(--amb) 13%,transparent),transparent),var(--bg)}
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.logo{background:linear-gradient(135deg,var(--amb),#e0762a);color:#120a04;box-shadow:0 6px 20px -6px var(--amb)}
+.sb{background:var(--pn2);color:var(--tx);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer}
+.pn,.fb,.hero{background:var(--pn);border:1px solid var(--line);box-shadow:inset 0 1px 0 #ffffff0a,0 24px 48px -32px #000}
+.hero{background:radial-gradient(800px 380px at 82% 0,color-mix(in srgb,var(--amb) 18%,transparent),transparent),linear-gradient(160deg,var(--pn),var(--bg))}
+.hh span{background:linear-gradient(90deg,var(--amb),#e0762a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.am,.tick{color:var(--amb)}.h2 i,.hs b[style]{color:var(--amb)}
+.eyebrow{letter-spacing:.16em}
+.card{background:var(--pn);padding:16px 16px 14px 18px;border-radius:18px;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:3px;border-radius:0 3px 3px 0;background:var(--up)}
+.card.dn::before{background:var(--dn)}
+.card.up{background:linear-gradient(180deg,color-mix(in srgb,var(--up) 13%,var(--pn)),var(--pn) 60%);border-color:color-mix(in srgb,var(--up) 30%,transparent)}
+.card.dn{background:linear-gradient(180deg,color-mix(in srgb,var(--dn) 13%,var(--pn)),var(--pn) 60%);border-color:color-mix(in srgb,var(--dn) 30%,transparent)}
+.card:hover{transform:translateY(-2px)}
+.name{font-size:19px;letter-spacing:-.01em;margin-top:14px}.price{font-size:24px;letter-spacing:-.02em}
+.t,.st div,.ct2{background:var(--pn2)}.t.p{border-color:var(--amb);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--amb) 35%,transparent)}
+.gb{background:linear-gradient(135deg,var(--up),color-mix(in srgb,var(--up) 70%,#000))}
+.ct button,.pos button{background:var(--pn2);border-color:var(--line)}
+.ct button.r{border-color:color-mix(in srgb,var(--dn) 45%,transparent)}
+.fb select,.fb input,.sets input,.sets select,#q{background:var(--bg)}
+@media(max-width:560px){main{padding:12px}.hero{padding:20px}}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%) translateY(-140px);z-index:60;padding:12px 20px;border-radius:14px;font-weight:800;font-size:15px;transition:transform .4s;box-shadow:0 10px 40px #000a}#toast.on{transform:translateX(-50%) translateY(0)}
+.rk{width:100%;height:34px;display:block;margin:6px 0 10px}
+html[data-theme=prism] body{background:radial-gradient(1100px 600px at 8% -10%,#2b1a6355,transparent),radial-gradient(900px 500px at 100% 0,#0b4f6c55,transparent),#070a12;font-family:ui-sans-serif,system-ui,"SF Pro Display","Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums}
+html[data-theme=prism] body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:34px 34px;-webkit-mask-image:linear-gradient(#000,transparent 75%);mask-image:linear-gradient(#000,transparent 75%);pointer-events:none;z-index:0}
+html[data-theme=prism] header,html[data-theme=prism] .tick,html[data-theme=prism] main,html[data-theme=prism] footer{position:relative;z-index:1}
+html[data-theme=prism] header{background:rgba(7,10,18,.82);backdrop-filter:blur(12px);border-bottom:1px solid #ffffff12}
+html[data-theme=prism] .logo{background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#fff;border-radius:12px;box-shadow:0 0 22px #8b5cf666}
+html[data-theme=prism] .tick{background:#0a0f1d;border-bottom:1px solid #ffffff10;color:#22d3ee}html[data-theme=prism] .tick .tr,html[data-theme=prism] .u{color:#2dffb4}html[data-theme=prism] .d{color:#ff4f7b}
+html[data-theme=prism] nav .on{border-bottom-color:#8b5cf6}html[data-theme=prism] .am,html[data-theme=prism] .h2 i{color:#22d3ee}
+html[data-theme=prism] .hero{background:radial-gradient(700px 300px at 82% 15%,#8b5cf633,transparent),radial-gradient(600px 300px at 15% 110%,#22d3ee22,transparent),#0b1020;border:0}
+html[data-theme=prism] .hero::after{content:"";position:absolute;inset:0;border-radius:24px;padding:1px;background:linear-gradient(120deg,#8b5cf6,transparent 30%,#22d3ee 60%,transparent 80%);background-size:300% 300%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;animation:sp 7s linear infinite}@keyframes sp{to{background-position:300% 0}}
+html[data-theme=prism] .hh span{background:linear-gradient(90deg,#8b5cf6,#22d3ee,#2dffb4);-webkit-background-clip:text;background-clip:text;color:transparent}html[data-theme=prism] .mtn stop{stop-color:#22d3ee}
+html[data-theme=prism] .bks .g{background:linear-gradient(135deg,#2dffb4cc,#06553f99);box-shadow:inset 0 0 18px #fff4,0 12px 40px #2dffb455}html[data-theme=prism] .bks .r{background:linear-gradient(135deg,#ff4f7bcc,#5c1030aa);box-shadow:inset 0 0 18px #fff4,0 12px 40px #ff4f7b55}
+html[data-theme=prism] .hs{background:#ffffff14}html[data-theme=prism] .hs div{background:#0a0f1dee}
+html[data-theme=prism] .pn,html[data-theme=prism] .fb,html[data-theme=prism] .mdb{background:rgba(14,20,36,.72);border:1px solid #ffffff14;border-radius:18px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html[data-theme=prism] .st div,html[data-theme=prism] .ct2,html[data-theme=prism] .chip{background:#060914aa;border-color:#ffffff12}
+html[data-theme=prism] .fb select,html[data-theme=prism] .fb input,html[data-theme=prism] .sets input,html[data-theme=prism] .sets select,html[data-theme=prism] #q,html[data-theme=prism] .ct input[type=number]{background:#060914;border:1px solid #ffffff1a;border-radius:10px;color:#fff}
+html[data-theme=prism] .gb{background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#fff;border:0;box-shadow:0 6px 24px #8b5cf644}html[data-theme=prism] .ct button{background:#ffffff0d;border:1px solid #ffffff22;color:#fff}html[data-theme=prism] .ct button.r{border-color:#ff4f7b77}
+html[data-theme=prism] .card{position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(180deg,#ffffff0b,#ffffff03),#0e1424;border:1px solid #ffffff14;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+html[data-theme=prism] .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+html[data-theme=prism] .card.up{--c:#2dffb4;box-shadow:inset 0 0 70px #2dffb414}html[data-theme=prism] .card.dn{--c:#ff4f7b;box-shadow:inset 0 0 70px #ff4f7b14}html[data-theme=prism] .card.fl{--c:#64748b;filter:none;opacity:.7;box-shadow:none}
+html[data-theme=prism] .card.fsh{animation:ring 2.2s infinite}@keyframes ring{0%{box-shadow:0 0 0 0 var(--c)}75%,100%{box-shadow:0 0 0 12px #0000}}
+html[data-theme=prism] .name{font-size:19px;letter-spacing:.02em}html[data-theme=prism] .price{font-size:25px;letter-spacing:-.02em}
+html[data-theme=prism] .t{background:#ffffff08;border:1px solid #ffffff12;border-radius:12px}html[data-theme=prism] .t.p{border-color:#8b5cf6;box-shadow:0 0 0 1px #8b5cf666,0 0 18px #8b5cf633}
+html[data-theme=prism] .fx{border-color:#ffffff12}html[data-theme=prism] .fx.u .bd{background:#2dffb4;color:#02130c}html[data-theme=prism] .fx.d .bd{background:#ff4f7b;color:#1a0310}
+html[data-theme=prism] .sr.u b{color:#2dffb4}html[data-theme=prism] .sr.d b{color:#ff4f7b}html[data-theme=prism] .sr.nw{background:#8b5cf622}
+</style><link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0707">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mok Strategy">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+</head><body>
+<header>
+<div class="logo">MOK</div><div class="brand">TRADE WITH<br>MOK</div>
+<nav><span>Main website</span><span class="on">Mok Strategy</span></nav><button id="snd" class="sb"></button>
+</header>
+<div class="tick mono"><span class="dot"></span><b>MOK EXCHANGE / LIVE REFRESH RUNNING</b><span class="m">AI Renko Supertrend · Binance public feed</span><span class="tr" id="tk2"></span></div>
+<main>
+<section class="hero"><svg class="mtn" viewBox="0 0 800 300" preserveAspectRatio="none"><defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0a43a" stop-opacity=".4"/><stop offset="1" stop-color="#e0a43a" stop-opacity="0"/></linearGradient></defs><polygon fill="url(#mg)" points="0,300 0,230 110,170 210,205 350,50 470,175 560,115 680,195 800,140 800,300"/></svg><div class="bks"><i class="g" style="right:6%;bottom:52%;height:120px;animation-delay:0s"></i><i class="r" style="right:16%;bottom:34%;height:90px;animation-delay:0.8s"></i><i class="g" style="right:26%;bottom:48%;height:140px;animation-delay:1.6s"></i><i class="r" style="right:36%;bottom:26%;height:70px;animation-delay:0.4s"></i><i class="g" style="right:46%;bottom:56%;height:100px;animation-delay:2.2s"></i><i class="r" style="right:8%;bottom:14%;height:80px;animation-delay:1.2s"></i></div>
+<div class="hc"><div class="eyebrow am">AI RENKO INTELLIGENCE ON CANDLES</div><h2 class="hh">Mok<br><span>Strategy.</span></h2>
+<p class="hp">Ek live Binance feed se har coin ka AI Renko Supertrend trend. Apna timeframe chuno, apni settings rakho, aur signal turant dekho.</p><div class="tg">RENKO KI CLARITY ── CANDLES KI REALITY</div></div>
+<div class="hs mono"><div><small>BULLISH TREND</small><b class="u" id="hb">0</b><span>current Renko state</span></div><div><small>BEARISH TREND</small><b class="d" id="hd">0</b><span>current Renko state</span></div><div><small>FRESH SIGNALS</small><b style="color:#e0a43a" id="hf">0</b><span>qualified · new flip</span></div><div><small>NOT QUALIFIED</small><b id="hn">0</b><span>filtered / warming</span></div></div></section>
+<div class="pn" style="border-color:#22e58a55"><div class="eyebrow am">⚡ FRESH SIGNALS (<span id="frc">0</span>) · candle band hone ke baad confirm hote hain</div><div id="frl" style="margin-top:8px"></div></div>
+<div class="fb"><label>MARKET<select id="mkt" disabled><option value="perp">USDT perpetuals</option></select></label><label>PRIMARY VIEW<select id="prim"></select></label><label class="fq">FIND A TOKEN<input id="q" placeholder="BTC, ETH, SOL..."></label><label>SIGNAL AGE<select id="sa"><option>All trend states</option><option>Fresh signals</option><option>Fresh up</option><option>Fresh down</option><option>Up trend</option><option>Down trend</option><option>Filtered / warming</option></select></label><label>SORT<select id="so"><option>Qualified first</option><option>Freshest first</option><option>Strongest ADX</option><option>Volume</option><option>A–Z</option></select></label><button id="chk" class="gb">Check latest ⟳</button></div>
+<div class="pn"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><div><div class="eyebrow am">MOK STANDARD CONFIGURATION</div><div class="h2">One consistent intelligence<i>.</i></div></div><span class="chip mono" id="cchip" style="height:fit-content"></span></div><div class="cg" id="cfg"></div></div>
+<details class="pn" open><summary class="eyebrow" style="cursor:pointer">⚙ SETTINGS · Supertrend 1 / 2 aur Brick size (apni marzi se badlo)</summary><div class="sets" id="sets"></div><div class="sub" style="margin-bottom:10px">Brick size mode: <b>Auto</b> = har candle ke ATR se brick. <b>Manual</b> = aapka fixed brick (jaise 2.95). <b>Percent</b> = price ka %. Value badalte hi sab cards turant update ho jaate hain.</div><div class="ct"><button id="dflt" class="r">Default settings</button></div></details>
+<div class="pn"><div class="eyebrow">🔔 LIVE SIGNALS (<span id="sigc">0</span>) · sound ke liye ek baar screen tap karo</div><div class="ct" style="margin-top:8px"><button id="tb">▶ Test BUY sound</button><button id="ts" class="r">▶ Test SELL sound</button></div><div id="sigl" class="sl" style="margin-top:8px"></div></div>
+
+<div class="pn"><div class="eyebrow" style="margin-bottom:10px">MOCK TRADING · PAPER ACCOUNT (no real money)</div>
+<div class="st mono" id="stats"></div>
+<div class="ct"><label>Trade size $ <input type="number" id="sz" value="500" min="10"></label>
+<label><input type="checkbox" id="auto" checked> Auto-trade on signal flip</label>
+<label><input type="checkbox" id="sh" checked> Allow shorts</label>
+<button id="take">Take fresh signals</button><button id="rst" class="r">Reset account</button></div>
+<div class="pw"><table class="mono"><thead><tr><th>Coin</th><th>Side</th><th>Entry</th><th>Now</th><th>P&amp;L $</th><th>P&amp;L %</th><th></th></tr></thead><tbody id="pos"></tbody></table></div>
+<div class="lg mono" id="log"></div></div>
+<div class="eyebrow am">ADAPTIVE RENKO TREND / SELECTED TOKENS</div><div class="h2" style="font-size:clamp(30px,6vw,44px);margin-bottom:4px">The market grid<i>.</i></div><div class="sub" id="sub"></div><div class="sub am" id="note"></div>
+<div class="legend"><span><b style="background:#22e58a"></b>Fresh up signal</span><span><b style="background:#1f7a52"></b>Older up trend</span><span><b style="background:#4a63b0"></b>Filtered / warming</span><span><b style="background:#7a2a2f"></b>Older down trend</span><span><b style="background:#ff4d5e"></b>Fresh down signal</span></div>
+<div class="bar"><div class="pb"><i></i></div><span>Live view ready · <span id="n">0</span>/<span id="n2">0</span> tokens on <span id="ptf">5m</span> · higher timeframes syncing in background</span></div>
+<div class="grid" id="grid"></div>
+</main><div id="toast"></div><div id="md"><div class="mdb" id="mdb"></div></div>
+<footer>Live Binance data (public API) · Mock/paper trading only – real paisa involve nahi hai.</footer>
+<script>
+const MIN={"1m":1,"3m":3,"5m":5,"15m":15,"30m":30,"1h":60,"2h":120,"4h":240,"1d":1440,"1w":10080},FIX=["5m","15m","30m","1h","4h","1d"];
+const LB=iv=>iv.replace("h","H").replace("d","D").replace("w","W");
+const fmt=p=>p>=100?p.toFixed(2):p>=.1?p.toFixed(4):p.toFixed(6);
+let BASES=["https://api.binance.com/api/v3/","https://data-api.binance.vision/api/v3/"],bi=0;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let pauseUntil=0;
+async function jget(u){for(let t=0;t<Math.max(2,BASES.length);t++){const wt=pauseUntil-Date.now();if(wt>0)await sleep(wt);try{const r=await fetch(BASES[bi]+u);if(r.ok)return r.json();if(r.status===429||r.status===418){pauseUntil=Date.now()+60000;await sleep(60000)}}catch(e){}bi=(bi+1)%BASES.length}throw new Error("x")}
+const DEF={mkt:"perp",sndStyle:"Rocket blast",vol:100,theme:"Prism",bMan:2.95,hist:499,prim:"5m",mode:"Both Agree",st1Len:14,st1Mul:3,st2Len:60,st2Mul:2,adxTh:15,adxLen:14,useCh:true,bMode:"Auto",bLen:14,bFac:1,bPct:.3,fresh:3,snd:true};
+let C={...DEF};try{Object.assign(C,JSON.parse(localStorage.getItem("mokcfg2")||"{}"))}catch(e){}
+if(!C.thv){C.theme="Prism";C.thv=1}
+const DL=()=>FIX.includes(C.prim)?FIX:[C.prim,...FIX];
+let S=[];
+const g=document.getElementById("grid");
+function cd(m){const n=Date.now(),s=m*60000-((n-(m===10080?3456e5:0))%(m*60000));const t=Math.floor(s/1000),h=Math.floor(t/3600);return (h?h+":":"")+String(Math.floor(t%3600/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0")}
+function render(){
+ const rows=view().map((o,i)=>{
+ const up=o.dir===1,c=up?"u":"d";
+ const tiles=DL().map((iv,k)=>{const t=o.tf[iv]||{d:0,st:"WARMING",adx:null};
+  const lab=t.d===0?'<span class="w">— WAIT</span>':t.d===1?'<span class="u">▲ UP</span>':'<span class="d">▼ DOWN</span>';
+  const mins=MIN[iv];
+  return `<div class="t ${iv===C.prim?"p":""}"><div class="h"><span>${LB(iv)}</span>${lab}</div><div class="s mono"><span>${t.st||(t.d?"AE":"")}${t.adx?" · ADX "+t.adx.toFixed(1):""}</span><span>${cd(mins)}</span></div></div>`}).join("");
+ return `<div class="card ${up?"up":"dn"} ${o.q?"":"fl"} ${o.q&&o.bars<=C.fresh?"fsh":""}" onclick="openD('${o.sym}')"><div class="top"><span>#${i+1}</span><span class="chip mono">${LB(C.prim)} PRIMARY · <b class="cd">${cd(MIN[C.prim])}</b></span></div>
+ <div class="name">${o.sym}</div><div class="full">${o.nm}</div>
+ <div class="price mono">${fmt(o.p)}<small>USDT</small></div>
+ <div class="row"><span class="${c}">TREND ${up?"UP":"DOWN"}</span><span class="m">${up?"BUY":"SELL"} · ${o.bars>=999?"no signal":o.bars===0?"latest candle":o.bars+" candles ago"}</span></div>
+ <div class="meta mono"><b>BRICK ${fmt(o.brick)}</b><b>ADX ${o.adx.toFixed(1)}</b></div>
+ ${rk(o)}<div class="tf">${tiles}</div></div>`}).join("");
+ g.innerHTML=rows}
+const START=10000;let realized=0,P={},LOG=[],wins=0,closed=0;
+const $=id=>document.getElementById(id);
+function openP(o,side){const sz=+$("sz").value||500;if(P[o.sym])return;P[o.sym]={side,entry:o.p,qty:sz/o.p,sz};LOG.unshift((side>0?"BUY ":"SELL ")+o.sym+" @ "+fmt(o.p))}
+function closeP(sym,why){const q=P[sym],o=S.find(x=>x.sym===sym);if(!q)return;const pnl=q.side*(o.p-q.entry)*q.qty;realized+=pnl;closed++;if(pnl>0)wins++;delete P[sym];LOG.unshift("CLOSE "+sym+" @ "+fmt(o.p)+" → "+(pnl>=0?"+":"")+pnl.toFixed(2)+"$ ("+(why||"manual")+")");LOG.length=Math.min(LOG.length,8)}
+function sig(o){if(!$("auto").checked)return;const q=P[o.sym];if(q&&q.side!==o.dir)closeP(o.sym,"signal flip");if(o.dir===1)openP(o,1);else if($("sh").checked)openP(o,-1);LOG.length=Math.min(LOG.length,8)}
+function mtm(){let u=0;const rows=Object.keys(P).map(s=>{const q=P[s],o=S.find(x=>x.sym===s),pnl=q.side*(o.p-q.entry)*q.qty;u+=pnl;const c=pnl>=0?"u":"d";return `<tr><td>${s}</td><td class="${q.side>0?"u":"d"}">${q.side>0?"LONG":"SHORT"}</td><td>${fmt(q.entry)}</td><td>${fmt(o.p)}</td><td class="${c}">${pnl.toFixed(2)}</td><td class="${c}">${(pnl/q.sz*100).toFixed(2)}%</td><td><button onclick="closeP('${s}');mtm()">Close</button></td></tr>`}).join("");
+$("pos").innerHTML=rows||'<tr><td colspan="7" class="m">Koi open trade nahi – signal flip ka wait karo ya "Take fresh signals" dabao.</td></tr>';
+const eq=START+realized+u,f=(v,c)=>`<b class="${c&&v<0?"d":c&&v>0?"u":""}">${v.toFixed(2)}</b>`;
+$("stats").innerHTML=`<div>EQUITY${f(eq)}</div><div>REALIZED${f(realized,1)}</div><div>UNREALIZED${f(u,1)}</div><div>OPEN<b>${Object.keys(P).length}</b></div><div>WIN RATE<b>${closed?Math.round(wins/closed*100)+"%":"–"}</b></div>`;
+$("log").innerHTML=LOG.join("<br>")}
+$("take").onclick=()=>{S.filter(o=>o.ok&&o.bars<=6&&!P[o.sym]&&(o.dir===1||$("sh").checked)).forEach(o=>openP(o,o.dir));LOG.length=Math.min(LOG.length,8);mtm()};
+$("rst").onclick=()=>{P={};LOG=[];realized=0;wins=0;closed=0;mtm()};
+
+
+function calc(k){
+ const n=k.length;let atr=null,ts=0,rc=null,ro=null,aR1=null,aR2=null,rT=null,rP=null,rM=null,adx=null,u1=null,l1=null,u2=null,l2=null,d1=1,d2=1,nBr=0,bk=[],fd1=null,fd2=null,ls=0,sd=0,sT=0,si=-1,lb=0,comb=0,trd=false;
+ const W=(a,v,m)=>a===null?v:a+(v-a)/m;
+ for(let i=0;i<n;i++){const h=+k[i][2],l=+k[i][3],c=+k[i][4],pcl=i?+k[i-1][4]:c,tr=i?Math.max(h-l,Math.abs(h-pcl),Math.abs(l-pcl)):h-l;
+  if(i<C.bLen-1)ts+=tr;else if(i===C.bLen-1){ts+=tr;atr=ts/C.bLen}else atr=(atr*(C.bLen-1)+tr)/C.bLen;
+  const br=C.bMode==="Manual"?C.bMan:C.bMode==="Percent"?c*C.bPct/100:(atr===null?null:atr*C.bFac);
+  if(br){lb=br;if(rc===null){rc=Math.floor(c/br)*br;ro=rc-br}
+   let mv=true,g=0;while(mv&&g++<1000){mv=false;const top=Math.max(rc,ro),bot=Math.min(rc,ro);let nO=null,nC=null;
+    if(c>=top+br){nO=top;nC=top+br}else if(c<=bot-br){nO=bot;nC=bot-br}
+    if(nC!==null){mv=true;const bh=Math.max(nO,nC),bl=Math.min(nO,nC),pc=rc,btr=Math.max(bh-bl,Math.abs(bh-pc),Math.abs(bl-pc));
+     const up=bh-top,dn=bot-bl,pD=up>dn&&up>0?up:0,mD=dn>up&&dn>0?dn:0,m=C.adxLen;
+     rT=W(rT,btr,m);rP=W(rP,pD,m);rM=W(rM,mD,m);
+     const pI=100*rP/rT,mI=100*rM/rT,ds=pI+mI;adx=W(adx,ds===0?0:100*Math.abs(pI-mI)/ds,m);
+     const mid=(bh+bl)/2;
+     aR1=W(aR1,btr,C.st1Len);let ub=mid+C.st1Mul*aR1,lw=mid-C.st1Mul*aR1;
+     if(l1!==null){lw=(lw>l1||pc<l1)?lw:l1;ub=(ub<u1||pc>u1)?ub:u1}
+     d1=l1===null?1:(d1===1?(nC>ub?-1:1):(nC<lw?1:-1));u1=ub;l1=lw;
+     aR2=W(aR2,btr,C.st2Len);let ub2=mid+C.st2Mul*aR2,lw2=mid-C.st2Mul*aR2;
+     if(l2!==null){lw2=(lw2>l2||pc<l2)?lw2:l2;ub2=(ub2<u2||pc>u2)?ub2:u2}
+     d2=l2===null?1:(d2===1?(nC>ub2?-1:1):(nC<lw2?1:-1));u2=ub2;l2=lw2;
+     nBr++;bk.push(nC>nO?1:-1);if(bk.length>40)bk.shift();ro=nO;rc=nC}}}
+  trd=!C.useCh||(adx!==null&&adx>C.adxTh);
+  const p1=fd1,p2=fd2;if(trd||fd1===null)fd1=d1;if(trd||fd2===null)fd2=d2;
+  comb=fd1<0&&fd2<0?-1:fd1>0&&fd2>0?1:0;
+  let L,S;
+  if(C.mode==="ST1 Only"){L=p1!==null&&fd1<0&&p1>0;S=p1!==null&&fd1>0&&p1<0}
+  else if(C.mode==="ST2 Only"){L=p2!==null&&fd2<0&&p2>0;S=p2!==null&&fd2>0&&p2<0}
+  else{L=comb===-1&&ls!==-1;S=comb===1&&ls!==1}
+  if(nBr>Math.max(C.st1Len,C.st2Len)){if(L){sd=1;sT=+k[i][0];si=i}else if(S){sd=-1;sT=+k[i][0];si=i}}
+  if(comb!==0)ls=comb}
+ return{bk,d1:fd1<0?1:-1,d2:fd2<0?1:-1,comb,tr:trd,adx:adx||0,brick:lb,nBr,sd,sT,sa:si<0?999:n-1-si}}
+function evalTF(o,iv,silent){const k=o.K[iv];if(!k)return;
+ if(k.length<60){o.tf[iv]={d:0,st:"WARMING",adx:null};return}
+ const r=calc(k),ag=C.mode==="ST1 Only"?r.d1:C.mode==="ST2 Only"?r.d2:(r.d1===r.d2?r.d1:0),flt=!r.tr;
+ o.tf[iv]={d:ag,st:flt?"FILTERED":(ag?"":"ST1\u2260ST2"),adx:r.adx};
+ if(iv===C.prim){const old=o.ok&&!silent?o.sT:null;o.dir=r.sd||ag||r.d1;o.sT=r.sT;
+  o.bars=r.sa;o.bk=r.bk;o.adx=r.adx;o.brick=r.brick;o.ok=true;o.q=!!ag&&!flt;
+  if(old!==null&&r.sT>old){sig(o);addSig(o)}}}
+let Q=[],run=0;
+async function w(){run++;while(Q.length){const [o,iv]=Q.shift();try{
+ const have=o.K[iv],full=iv===C.prim?Math.min(C.hist||499,5000):300,gl=async n=>{const b="klines?symbol="+o.sym+"&interval="+iv;if(n<=1000)return jget(b+"&limit="+n);let all=[],end=null;while(all.length<n){const j=await jget(b+"&limit=1000"+(end?"&endTime="+end:""));if(!j.length)break;all=j.concat(all);end=j[0][0]-1;if(j.length<1000)break}return all};
+ const now=Date.now();let k=(await gl(have&&have.length?5:full)).filter(x=>x[6]<now);
+ if(have&&have.length){const lt=have[have.length-1][0];
+  if(k.length&&k[0][0]>lt+MIN[iv]*60000)k=(await gl(full)).filter(x=>x[6]<now);else k=have.concat(k.filter(x=>x[0]>lt)).slice(-6000)}
+ o.K[iv]=k;evalTF(o,iv,false)}catch(e){}await sleep(350)}run--}
+function add(ivs,force){ivs.forEach(iv=>S.forEach(o=>{if(force||!o.K[iv])Q.push([o,iv])}));while(run<6&&Q.length)w()}
+const ordered=()=>[C.prim,...DL().filter(x=>x!==C.prim)];
+let SIG=[];
+function addSig(o){toast((o.dir>0?"\u{1F680} BUY ":"\u{1F53B} SELL ")+o.sym,o.dir>0);SIG.unshift({t:Date.now(),sym:o.sym,side:o.dir,p:o.p,tf:C.prim,adx:o.adx});SIG.length=Math.min(SIG.length,40);
+ playSig(o.dir)
+ try{navigator.vibrate&&navigator.vibrate(200)}catch(e){}paintSig()}
+function paintSig(){const now=Date.now();$("sigc").textContent=SIG.length;
+ $("sigl").innerHTML=SIG.length?SIG.map(s=>`<div class="sr ${s.side>0?"u":"d"} ${now-s.t<60000?"nw":""}"><b>${s.side>0?"BUY":"SELL"}</b> ${s.sym} <span class="m">@ ${fmt(s.p)} \u00b7 ${LB(s.tf)} \u00b7 ADX ${s.adx.toFixed(1)} \u00b7 ${new Date(s.t).toLocaleTimeString()}</span></div>`).join(""):'<div class="m">Abhi koi naya signal nahi. Jaise hi koi coin flip karega, yahan turant dikhega.</div>';
+ paintFresh()}
+function paint(){$("n").textContent=S.filter(o=>o.ok).length;$("n2").textContent=S.length;render();mtm();paintSig();paintHero()}
+const F=[["mode","Signal mode","sel",["Both Agree","ST1 Only","ST2 Only"]],["st1Len","Supertrend 1 \u00b7 ATR length","num",1],["st1Mul","Supertrend 1 \u00b7 multiplier","num",.1],["st2Len","Supertrend 2 \u00b7 ATR length","num",1],["st2Mul","Supertrend 2 \u00b7 multiplier","num",.1],["useCh","Choppy filter (ADX)","chk"],["adxTh","ADX threshold","num",1],["adxLen","ADX length","num",1],["bMode","Brick size mode","sel",["Auto","Manual","Percent"]],["bMan","Manual brick size (price)","num",.01],["hist","History candles (499 fast \u00b7 max 5000)","num",50],["bLen","Brick ATR length","num",1],["bFac","Brick ATR factor","num",.1],["bPct","Brick % of price","num",.05],["fresh","Fresh = bars \u2264","num",1],["snd","Signal sound","chk"],["sndStyle","Sound style","sel",["Rocket blast","Soft chime"]],["vol","Volume (0-100)","num",5],["theme","Theme","sel",["Prism","Midnight","Carbon","Aurora"]]];
+function buildSets(){$("sets").innerHTML=F.map(([k,l,t,x])=>`<label>${l}${t==="sel"?`<select data-k="${k}">${x.map(v=>`<option ${C[k]===v?"selected":""}>${v}</option>`).join("")}</select>`:t==="chk"?`<input type="checkbox" data-k="${k}" ${C[k]?"checked":""}>`:`<input type="number" data-k="${k}" value="${C[k]}" step="${x}" min="0">`}</label>`).join("");
+ $("sets").querySelectorAll("[data-k]").forEach(e=>e.onchange=()=>{const k=e.dataset.k,t=F.find(f=>f[0]===k)[2];C[k]=t==="chk"?e.checked:t==="num"?+e.value:e.value;try{localStorage.setItem("mokcfg2",JSON.stringify(C))}catch(x){}applyCfg()})}
+function applyCfg(){applyTheme();applyTheme();S.forEach(o=>{o.ok=false;o.tf={};DL().forEach(iv=>evalTF(o,iv,true))});add(ordered(),false);paint()}
+$("dflt").onclick=()=>{C={...DEF};try{localStorage.removeItem("mokcfg2")}catch(e){}buildSets();syncBar();loadMkt()};
+$("q").oninput=()=>render();
+buildSets();
+async function prices(){try{const t=await jget("ticker/price"),m={};t.forEach(x=>m[x.symbol]=+x.price);S.forEach(o=>{if(m[o.sym])o.p=m[o.sym]})}catch(e){}}
+
+const save=()=>{try{localStorage.setItem("mokcfg2",JSON.stringify(C))}catch(e){}};
+const PL={"1m":"1 minute","3m":"3 minutes","5m":"5 minutes","15m":"15 minutes","30m":"30 minutes","1h":"1 hour","2h":"2 hours","4h":"4 hours","1d":"1 day","1w":"1 week"};
+$("prim").innerHTML=Object.keys(MIN).map(k=>`<option value="${k}">${PL[k]}</option>`).join("");
+function syncBar(){$("mkt").value=C.mkt;$("prim").value=C.prim}
+syncBar();
+$("mkt").onchange=e=>{C.mkt=e.target.value;save();loadMkt()};
+$("prim").onchange=e=>{C.prim=e.target.value;save();applyCfg()};
+$("sa").onchange=paint;$("so").onchange=paint;
+$("chk").onclick=()=>{add([C.prim],true);prices().then(paint)};
+function view(){const q=($("q").value||"").toUpperCase(),sa=$("sa").value,so=$("so").value,fr=o=>o.q&&o.bars<=C.fresh;
+ const L=S.filter(o=>o.ok&&o.sym.includes(q)&&(sa==="All trend states"||(sa==="Fresh signals"&&fr(o))||(sa==="Fresh up"&&fr(o)&&o.dir>0)||(sa==="Fresh down"&&fr(o)&&o.dir<0)||(sa==="Up trend"&&o.dir>0)||(sa==="Down trend"&&o.dir<0)||(sa==="Filtered / warming"&&!o.q)));
+ const f={"Qualified first":(a,b)=>(b.q|0)-(a.q|0),"Freshest first":(a,b)=>(b.q|0)-(a.q|0)||a.bars-b.bars,"Strongest ADX":(a,b)=>b.adx-a.adx,"A\u2013Z":(a,b)=>a.sym.localeCompare(b.sym)}[so];
+ return f?L.sort(f):L}
+function paintHero(){const L=S.filter(o=>o.ok),q=L.filter(o=>o.q);
+ $("hb").textContent=q.filter(o=>o.dir>0).length;$("hd").textContent=q.filter(o=>o.dir<0).length;$("hf").textContent=q.filter(o=>o.bars<=C.fresh).length;$("hn").textContent=L.length-q.length;
+ $("ptf").textContent=LB(C.prim);
+ $("cchip").textContent="STANDARD \u00b7 "+(C.bMode==="Manual"?"MANUAL BRICK "+C.bMan:C.bMode==="Percent"?C.bPct+"% BRICK":"AUTO BRICK")+" \u00b7 ADX > "+C.adxTh;
+ $("sub").textContent=LB(C.prim)+" \u00b7 ATR "+C.st1Len+" \u00b7 factor "+C.st1Mul+" \u00b7 "+C.mode+" \u00b7 adaptive brick \u00b7 ADX > "+C.adxTh+" \u00b7 "+(C.mkt==="perp"?"USDT perpetuals":"USDT spot");
+ const T=(a,b,c)=>`<div class="ct2"><small>${a}</small><b>${b}</b><span>${c}</span></div>`;
+ $("cfg").innerHTML=T("SUPERTREND 1",C.st1Len+" \u00d7 "+C.st1Mul,"ATR length \u00d7 multiplier")+T("SUPERTREND 2",C.st2Len+" \u00d7 "+C.st2Mul,"ATR length \u00d7 multiplier")+T("BRICK SIZE",C.bMode==="Manual"?C.bMan:C.bMode==="Percent"?C.bPct+"%":"AUTO",C.bMode==="Manual"?"Manual (fixed)":C.bMode==="Percent"?"of price":"Adaptive (ATR "+C.bLen+")")+T("CHOPPY FILTER",C.useCh?"ON":"OFF","Threshold "+C.adxTh)+'<div class="ct2"><small>TREND COLOURS</small><b><i class="sw" style="background:#22e58a"></i><i class="sw" style="background:#ff4d5e"></i></b><span>Up / Down</span></div>'+T("SIGNAL MODE",C.mode.replace(" Agree",""),"Dual Supertrend")}
+
+function paintFresh(){const L=S.filter(o=>o.ok&&o.bars<=C.fresh).sort((a,b)=>b.sT-a.sT);$("frc").textContent=L.length;
+ $("frl").innerHTML=L.length?L.map(o=>{const up=o.dir>0,ct=new Date(o.sT+MIN[C.prim]*6e4).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+  return `<div class="fx ${up?"u":"d"}" onclick="openD('${o.sym}')"><b class="bd">${up?"BUY":"SELL"}</b><span class="fs">${o.nm}</span><span class="mono">${fmt(o.p)}</span><span class="m">${LB(C.prim)} \u00b7 confirm ${ct} \u00b7 ${o.bars===0?"abhi band hui":o.bars+" candle pehle"}</span><span class="m">ADX ${o.adx.toFixed(1)}</span></div>`}).join(""):'<div class="m">Abhi koi fresh signal nahi (last '+C.fresh+' candles). Naya candle band hote hi yahan aayega.</div>'}
+const fmT=t=>new Date(t).toLocaleString([],{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+function openD(sym){const o=S.find(x=>x.sym===sym);if(!o)return;const k=o.K[C.prim]||[],r=k.length>=60?calc(k):null;
+ $("mdb").innerHTML=`<div class="h2" style="font-size:22px">${o.sym}</div><div class="mono md">Market: ${C.mkt==="perp"?"USDT perpetuals":"USDT spot"} \u00b7 TF ${LB(C.prim)} \u00b7 ${k.length} candles used<br>`+
+ (r&&r.sd?`Last signal: <b class="${r.sd>0?"u":"d"}">${r.sd>0?"BUY":"SELL"}</b> \u00b7 candle ${fmT(r.sT)} (close ${fmT(r.sT+MIN[C.prim]*6e4)})`:"Last signal: none in loaded history")+
+ `<br>ST1: ${r?(r.d1>0?"BULL":"BEAR"):"-"} \u00b7 ST2: ${r?(r.d2>0?"BULL":"BEAR"):"-"} \u00b7 aligned: ${r?(r.comb<0?"BULL":r.comb>0?"BEAR":"MIXED"):"-"}<br>ADX ${r?r.adx.toFixed(2):"-"} (threshold ${C.adxTh}) \u00b7 trending: ${r?(r.tr?"YES":"NO"):"-"}<br>Brick ${r?r.brick:"-"} \u00b7 bricks built ${r?r.nBr:"-"}</div>
+ <div class="sub" style="margin:10px 0">TradingView par same market (${C.mkt==="perp"?"PERP":"spot"}) aur ${LB(C.prim)} chart kholke is candle par BUY/SELL label dekho. ADX threshold ke bahut paas ho to chhota data farak signal badal sakta hai. "Deep check" 5000 candles se dobara hisaab lagata hai.</div>
+ <div class="ct"><button id="deep">Deep check (5000 candles)</button><button class="r" id="mdx">Close</button></div><div class="mono md" id="deepo"></div>`;
+ $("md").style.display="block";$("mdx").onclick=()=>$("md").style.display="none";$("deep").onclick=()=>deep(o)}
+$("md").onclick=e=>{if(e.target.id==="md")$("md").style.display="none"};
+async function deep(o){const out=$("deepo");out.textContent="Loading 5000 candles...";
+ try{let all=[],end=null;for(let p=0;p<5;p++){const j=await jget("klines?symbol="+o.sym+"&interval="+C.prim+"&limit=1000"+(end?"&endTime="+end:""));if(!j.length)break;all=j.concat(all);end=j[0][0]-1;if(j.length<1000)break}
+  const now=Date.now();all=all.filter(x=>x[6]<now);const r=calc(all);o.K[C.prim]=all;evalTF(o,C.prim,true);paint();
+  out.innerHTML=`Deep result (${all.length} candles):<br>`+(r.sd?`Last signal: <b class="${r.sd>0?"u":"d"}">${r.sd>0?"BUY":"SELL"}</b> \u00b7 candle ${fmT(r.sT)}`:"No signal")+`<br>ADX ${r.adx.toFixed(2)} \u00b7 ST1 ${r.d1>0?"BULL":"BEAR"} \u00b7 ST2 ${r.d2>0?"BULL":"BEAR"}<br>Card bhi isi hisaab se update ho gaya.`
+ }catch(e){out.textContent="Data nahi aaya, dobara try karo."}}
+let lbd=0;setInterval(()=>{const m=MIN[C.prim]*6e4,b=Math.floor(Date.now()/m)*m;if(b!==lbd&&Date.now()-b>2500){lbd=b;if(Q.length<50)add([C.prim],true)}},1000);
+
+let AC=null;const vol=()=>C.vol==null?.8:Math.max(0,Math.min(1,C.vol/100));
+function ac(){if(!AC){const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;AC=new A()}if(AC.state==="suspended")AC.resume();return AC}
+function rocket(up){const a=ac();if(!a)return;const t=a.currentTime,out=a.createGain();let cmp;cmp=a.createDynamicsCompressor();cmp.threshold.value=-18;cmp.ratio.value=12;out.gain.value=vol()*2.6;out.connect(cmp);cmp.connect(a.destination);
+ const len=Math.floor(a.sampleRate*1.7),buf=a.createBuffer(1,len,a.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+ const n=a.createBufferSource();n.buffer=buf;const f=a.createBiquadFilter();f.type="bandpass";f.Q.value=.9;
+ f.frequency.setValueAtTime(up?260:2600,t);f.frequency.exponentialRampToValueAtTime(up?3400:160,t+1.3);
+ const g=a.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.9,t+.12);g.gain.exponentialRampToValueAtTime(.0001,t+1.6);
+ n.connect(f);f.connect(g);g.connect(out);n.start(t);n.stop(t+1.7);
+ const o=a.createOscillator(),og=a.createGain();o.type="sine";o.frequency.setValueAtTime(up?150:95,t);o.frequency.exponentialRampToValueAtTime(38,t+.65);
+ og.gain.setValueAtTime(1,t);og.gain.exponentialRampToValueAtTime(.0001,t+.75);o.connect(og);og.connect(out);o.start(t);o.stop(t+.8);
+ const o2=a.createOscillator(),g2=a.createGain();o2.type="sawtooth";o2.frequency.setValueAtTime(up?170:900,t);o2.frequency.exponentialRampToValueAtTime(up?1500:110,t+1.2);
+ g2.gain.setValueAtTime(.0001,t);g2.gain.exponentialRampToValueAtTime(.16,t+.18);g2.gain.exponentialRampToValueAtTime(.0001,t+1.3);o2.connect(g2);g2.connect(out);o2.start(t);o2.stop(t+1.35)}
+function chime(up){const a=ac();if(!a)return;const t=a.currentTime,V=vol();(up?[660,880,1320]:[660,520,392]).forEach((fr,i)=>{const d=i*.16,o=a.createOscillator(),g=a.createGain();o.type="sine";o.frequency.value=fr;
+ g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.9*V,t+d+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d+.35);o.connect(g);g.connect(a.destination);o.start(t+d);o.stop(t+d+.4)})}
+function playSig(side){if(!C.snd)return;try{(C.sndStyle==="Soft chime"?chime:rocket)(side>0)}catch(e){}}
+function applyTheme(){document.documentElement.dataset.theme=(C.theme||"Midnight").toLowerCase();$("snd").textContent=C.snd?"\ud83d\udd0a Sound ON":"\ud83d\udd07 Sound OFF"}
+$("snd").onclick=()=>{C.snd=!C.snd;save();buildSets();applyTheme();if(C.snd)try{(C.sndStyle==="Soft chime"?chime:rocket)(true)}catch(e){}};
+$("tb").onclick=()=>{try{(C.sndStyle==="Soft chime"?chime:rocket)(true)}catch(e){}};$("ts").onclick=()=>{try{(C.sndStyle==="Soft chime"?chime:rocket)(false)}catch(e){}};
+document.addEventListener("pointerdown",()=>ac(),{once:true});applyTheme();
+
+let tt;function toast(m,up){const e=$("toast");e.textContent=m;e.style.background=up?"#22e58a":"#ff4f7b";e.style.color=up?"#04130c":"#1a0306";e.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("on"),5000)}
+function rk(o){const b=o.bk;if(!b||b.length<3)return"";const W=7,G=2;let lv=0;const ls=b.map(d=>lv+=d),mx=Math.max(0,...ls),mn=Math.min(0,...ls)-1,H=Math.max(mx-mn,4),bh=Math.min(8,30/H),n=b.length;let r="",pv=0;
+ b.forEach((d,i)=>{const top=Math.max(pv,ls[i]);r+=`<rect x="${i*(W+G)}" y="${((mx-top)*bh).toFixed(1)}" width="${W}" height="${(bh-.6).toFixed(1)}" rx="1.5" fill="${d>0?"#2dffb4":"#ff4f7b"}" opacity="${(.4+.6*(i+1)/n).toFixed(2)}"/>`;pv=ls[i]});
+ return `<svg class="rk" viewBox="0 0 ${n*(W+G)} ${((mx-mn)*bh+1).toFixed(0)}" preserveAspectRatio="none">${r}</svg>`}
+async function loadMkt(){applyTheme();C.mkt="perp";BASES=(typeof SERVER!=="undefined"&&SERVER)?[location.origin+"/b/f/"]:["https://fapi.binance.com/fapi/v1/"];bi=0;Q=[];S=[];g.innerHTML="";paint();
+ try{let ok=null;try{const ei=await jget("exchangeInfo");ok=new Set(ei.symbols.filter(s=>s.contractType==="PERPETUAL"&&s.status==="TRADING"&&s.quoteAsset==="USDT").map(s=>s.symbol))}catch(e){}
+  const t=await jget("ticker/24hr");
+  S=t.filter(x=>x.symbol.endsWith("USDT")&&(!ok||ok.has(x.symbol))).sort((a,b)=>b.quoteVolume-a.quoteVolume).map(x=>({sym:x.symbol,nm:x.symbol.replace("USDT",""),p:+x.lastPrice,brick:0,dir:1,bars:0,adx:0,ok:false,q:false,K:{},tf:{}}));
+  add(ordered(),false);
+ }catch(e){g.innerHTML='<div class="m" style="padding:20px">Binance Futures data nahi aa raha. Internet check karo. Agar aapke region/network mein Binance Futures band hai to server wala version (Singapore) se chalao. File Chrome mein kholo (claude.ai ke andar block hota hai).</div>'}}
+loadMkt();
+setInterval(async()=>{await prices();paint()},5000);
+setInterval(()=>{if(Q.length<50)add([C.prim],true)},60000);
+setInterval(()=>{if(Q.length<50)add(ordered().slice(1),true)},300000);
+setInterval(()=>{const c=cd(MIN[C.prim]);document.querySelectorAll(".cd").forEach(e=>e.textContent=c);$("tk2").textContent="NEXT "+LB(C.prim)+" CLOSE IN "+c+" \u00b7 Snapshot "+new Date().toUTCString().slice(5,25)+" UTC"},1000);
+</script><script>
+/* Phone alerts: web push setup (button + code to copy) */
+(function(){
+  var VAPID_PUBLIC="BG_Od3CoOVmEviensjEJeJGHzYoB7FfNpcLYOaZmBsb83HP-MWxqnZsrj-rDVYju_AIqSVzML50WOF5mETLkS-g";
+  function u8(b){var p='='.repeat((4-b.length%4)%4),s=(b+p).replace(/-/g,'+').replace(/_/g,'/'),r=atob(s),o=new Uint8Array(r.length);for(var i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o}
+  var css=document.createElement('style');
+  css.textContent='#pushBtn{position:fixed;left:14px;bottom:14px;z-index:60;border:0;border-radius:999px;padding:10px 16px;font:600 13px var(--sans,system-ui);background:var(--amb,#e0a43a);color:#1a1200;box-shadow:0 4px 18px rgba(0,0,0,.35);cursor:pointer}'+
+  '#pushOv{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px}'+
+  '#pushOv.on{display:flex}#pushBox{width:100%;max-width:440px;max-height:90vh;overflow:auto;background:#140c0c;color:var(--tx,#e4e8f0);border:1px solid var(--bd2,#2f3748);border-radius:14px;padding:18px;font:13px/1.5 var(--sans,system-ui)}'+
+  '#pushBox h3{font-size:15px;margin-bottom:8px}#pushBox p{margin:8px 0;color:var(--mu,#8a93a6)}#pushBox button{border:1px solid var(--bd2,#2f3748);background:#241616;color:var(--tx,#e4e8f0);border-radius:9px;padding:9px 14px;font:600 13px var(--sans,system-ui);margin:4px 6px 4px 0;cursor:pointer}'+
+  '#pushBox button.pri{background:var(--amb,#e0a43a);color:#1a1200;border-color:var(--amb,#e0a43a)}#pushTa{width:100%;height:120px;margin-top:8px;background:#1b1111;color:var(--tx,#e4e8f0);border:1px solid var(--bd,#232937);border-radius:9px;padding:8px;font:11px var(--mono,monospace);display:none}#pushMsg{color:var(--tx,#e4e8f0)}';
+  document.head.appendChild(css);
+  var btn=document.createElement('button');btn.id='pushBtn';btn.textContent='\uD83D\uDD14 Phone alerts';document.body.appendChild(btn);
+  var ov=document.createElement('div');ov.id='pushOv';
+  ov.innerHTML='<div id="pushBox"><h3>Phone alerts (app band hone par bhi)</h3>'+
+   '<p>1. Neeche Allow dabayein aur browser ki permission Allow karein.<br>2. Jo code aaye usay Copy karein.<br>3. GitHub me PUSH_SUB secret me paste karein.</p>'+
+   '<button class="pri" id="pushAllow">Allow notifications</button><button id="pushTest">Test</button><button id="pushClose">Close</button>'+
+   '<p id="pushMsg"></p><textarea id="pushTa" readonly></textarea><button class="pri" id="pushCopy" style="display:none">Copy code</button></div>';
+  document.body.appendChild(ov);
+  var $=function(i){return document.getElementById(i)};
+  function msg(t){$('pushMsg').textContent=t}
+  btn.onclick=function(){ov.classList.add('on')};
+  $('pushClose').onclick=function(){ov.classList.remove('on')};
+  $('pushAllow').onclick=async function(){
+    try{
+      if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window)){msg('Is browser me push support nahi. iPhone par pehle app ko Safari se Home Screen par add karein (iOS 16.4 ya naya), phir wahin se kholein. Android par Chrome use karein.');return}
+      var perm=await Notification.requestPermission();
+      if(perm!=='granted'){msg('Permission nahi mili. Browser/phone settings me is site ke liye Notifications Allow karein, phir dobara try karein.');return}
+      var reg=await navigator.serviceWorker.ready;
+      var sub=await reg.pushManager.getSubscription();
+      if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(VAPID_PUBLIC)});
+      $('pushTa').value=JSON.stringify(sub.toJSON());$('pushTa').style.display='block';$('pushCopy').style.display='inline-block';
+      msg('Ho gaya. Ab Copy code dabayein aur GitHub secret PUSH_SUB me paste karein.');
+    }catch(e){msg('Error: '+(e&&e.message||e))}
+  };
+  $('pushCopy').onclick=async function(){
+    var ta=$('pushTa');
+    try{await navigator.clipboard.writeText(ta.value);msg('Copy ho gaya.')}catch(e){ta.select();ta.setSelectionRange(0,99999);try{document.execCommand('copy');msg('Copy ho gaya.')}catch(_){msg('Text select ho gaya, khud copy kar lein.')}}
+  };
+  $('pushTest').onclick=async function(){
+    try{var reg=await navigator.serviceWorker.ready;await reg.showNotification('CAB Radar',{body:'Test notification theek hai.',icon:'icons/icon-192.png'});msg('Test bhej diya.')}catch(e){msg('Error: '+(e&&e.message||e))}
+  };
+})();
+</script>
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});}
+</script>
+</body></html>
