@@ -1,4 +1,5 @@
 {
+  "id": "mok-strategy-app",
   "name": "Mok Strategy",
   "short_name": "Mok",
   "description": "AI Renko Supertrend live dashboard (Binance)",
